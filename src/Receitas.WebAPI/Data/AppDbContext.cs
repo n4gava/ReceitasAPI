@@ -9,11 +9,14 @@ namespace Receitas.WebAPI.Data
 {
     public class AppDbContext : DbContext
     {
+        public AppDbContext()
+        {
+
+        }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base (options)
         {
-            this.Database.Migrate();
+       
         }
-
 
         public DbSet<Receita> Receitas { get; set; }
         public DbSet<PassoPreparo> PassosPreparo { get; set; }

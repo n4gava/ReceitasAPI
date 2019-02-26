@@ -6,6 +6,7 @@ namespace Receitas.WebAPI.Entities
     public class PassoPreparo : BaseEntity
     {
         [MaxLength(255)]
+        [Required]
         public string Descricao { get; set; }
     }
 }
