@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
+using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.OData.Edm;
 using Receitas.WebAPI.Data;
+using Receitas.WebAPI.Entities;
+using Microsoft.AspNet.OData.Extensions;
 
 namespace Receitas.WebAPI
 {
@@ -29,7 +27,16 @@ namespace Receitas.WebAPI
         {
             var connection = Configuration["MySQLConnection:MySQLConnectionString"];
             services.AddDbContext<AppDbContext>(options => options.UseMySql(connection));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddMvc(options =>
+                {
+                    // https://blogs.msdn.microsoft.com/webdev/2018/08/27/asp-net-core-2-2-0-preview1-endpoint-routing/
+                    // Because conflicts with ODataRouting as of this version
+                    // could improve performance though
+                    options.EnableEndpointRouting = false;
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddOData();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +53,19 @@ namespace Receitas.WebAPI
             }
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseMvc(r =>
+            {
+                r.Count().Filter().OrderBy().Expand().Select().MaxTop(null);
+                r.MapODataServiceRoute("odata", "odata", GetEdmModel());
+            });
+
+        }
+
+        private static IEdmModel GetEdmModel()
+        {
+            ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
+            builder.EntitySet<Receita>(nameof(Receita));
+            return builder.GetEdmModel();
         }
     }
 }
