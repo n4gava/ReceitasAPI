@@ -10,6 +10,8 @@ using Microsoft.OData.Edm;
 using Receitas.WebAPI.Data;
 using Receitas.WebAPI.Entities;
 using Microsoft.AspNet.OData.Extensions;
+using Microsoft.Extensions.Logging;
+using Receitas.WebAPI.Middleware;
 
 namespace Receitas.WebAPI
 {
@@ -52,13 +54,15 @@ namespace Receitas.WebAPI
                 app.UseHsts();
             }
 
+            // habilita o middleware para logar a request e response
+            //app.UseMiddleware<RequestResponseLoggingMiddleware>();
+
             app.UseHttpsRedirection();
             app.UseMvc(r =>
             {
                 r.Count().Filter().OrderBy().Expand().Select().MaxTop(null);
                 r.MapODataServiceRoute("odata", "odata", GetEdmModel());
-            });
-
+            });   
         }
 
         private static IEdmModel GetEdmModel()

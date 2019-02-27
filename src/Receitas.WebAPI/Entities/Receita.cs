@@ -1,4 +1,5 @@
-﻿using Receitas.Framework.Entities;
+﻿using Microsoft.AspNet.OData.Builder;
+using Receitas.Framework.Entities;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -18,10 +19,10 @@ namespace Receitas.WebAPI.Entities
         [Required]
         public int Porcoes { get; set; }
 
-        [Required]
+        [AutoExpand]
         public List<Ingrediente> Ingredientes { get; set; }
 
-        [Required]
+        [AutoExpand]
         public List<PassoPreparo> ModoPreparo { get; set; }
         
     }

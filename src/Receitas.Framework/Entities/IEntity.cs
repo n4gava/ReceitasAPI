@@ -6,6 +6,6 @@ namespace Receitas.Framework.Entities
 {
     public interface IEntity
     {
-        long ID { get; set; }
+        long? ID { get; set; }
     }
 }
